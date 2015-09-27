@@ -20,4 +20,14 @@
     <string name="message_problem_top_10_tracks">There was a problem retrieving the artist\'s Top 10 Tracks.  Check your network connection and try again.</string>
     <string name="message_problem_artist">There was a problem searching for the artists.  Check your network connection and try again.</string>
     <string name="message_check_for_network_connectivity">Check for network connectivity and try again.</string>
+    <string name="title_activity_event">Upcoming Events</string>
+
+    <string-array name="pref_beaconTypes_entries">
+        <item>Simulated Eddystone beacon</item>
+        <item>Real Eddystone beacon</item>
+    </string-array>
+    <string-array name="pref_beaconTypes_values">
+        <item>simulated</item>
+        <item>real</item>
+    </string-array>
 </resources>

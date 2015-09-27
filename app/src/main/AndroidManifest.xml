@@ -33,9 +33,15 @@
             android:name=".SettingsActivity"
             android:label="SettingsActivity" >
         </activity>
-        
+        <activity
+            android:name=".EventActivity"
+            android:label="@string/title_activity_event" >
+        </activity>
         <service
             android:name=".service.TrackPlayerService"
+            android:exported="false"/>
+        <service
+            android:name=".service.BeaconScanningService"
             android:exported="false"/>
     </application>
 

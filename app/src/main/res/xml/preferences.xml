@@ -8,4 +8,14 @@
         android:key="pref_show_on_lock_screen"
         android:defaultValue="true"
         android:title="Show notification controls on lock screen" />
+    <CheckBoxPreference
+        android:key="pref_enable_beacon_scanning"
+        android:defaultValue="false"
+        android:title="Enable scanning for Spotify beacons" />
+    <ListPreference
+        android:key="pref_beacon_type"
+        android:entries="@array/pref_beaconTypes_entries"
+        android:entryValues="@array/pref_beaconTypes_values"
+        android:defaultValue="simulated"
+        android:title="Beacon type" />
 </PreferenceScreen>
