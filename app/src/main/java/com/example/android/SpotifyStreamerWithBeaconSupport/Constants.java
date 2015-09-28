@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 /**
  * Created by John on 8/26/2015.

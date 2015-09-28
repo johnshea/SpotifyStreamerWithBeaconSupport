@@ -1,4 +1,4 @@
-package com.example.android.project1.service;
+package com.example.android.SpotifyStreamerWithBeaconSupport.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -7,8 +7,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.example.android.project1.EventActivity;
-import com.example.android.project1.R;
+import com.example.android.SpotifyStreamerWithBeaconSupport.EventActivity;
+import com.example.android.SpotifyStreamerWithBeaconSupport.R;
 
 public class BeaconScanningService extends Service {
 

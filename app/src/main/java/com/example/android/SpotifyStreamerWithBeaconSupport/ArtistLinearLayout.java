@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 import android.content.Context;
 import android.graphics.Bitmap;

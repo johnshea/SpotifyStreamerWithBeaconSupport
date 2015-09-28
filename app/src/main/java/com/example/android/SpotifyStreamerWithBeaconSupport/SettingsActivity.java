@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;

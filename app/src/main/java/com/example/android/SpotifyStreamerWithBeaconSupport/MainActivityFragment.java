@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,8 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.project1.models.LocalArtist;
-import com.example.android.project1.models.LocalImage;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalArtist;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalImage;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

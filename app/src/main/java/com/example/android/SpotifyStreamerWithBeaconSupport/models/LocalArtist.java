@@ -1,4 +1,4 @@
-package com.example.android.project1.models;
+package com.example.android.SpotifyStreamerWithBeaconSupport.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

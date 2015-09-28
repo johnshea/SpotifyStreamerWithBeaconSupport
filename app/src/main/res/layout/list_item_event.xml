@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.android.project1.ArtistLinearLayout
+<com.example.android.SpotifyStreamerWithBeaconSupport.ArtistLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
@@ -42,4 +42,4 @@
 
     </LinearLayout>
 
-</com.example.android.project1.ArtistLinearLayout>
+</com.example.android.SpotifyStreamerWithBeaconSupport.ArtistLinearLayout>

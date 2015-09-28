@@ -5,7 +5,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="horizontal"
-    tools:context="com.example.android.project1.TrackPlayerActivityFragment"
+    tools:context="com.example.android.SpotifyStreamerWithBeaconSupport.TrackPlayerActivityFragment"
     android:weightSum="2">
 
     <LinearLayout

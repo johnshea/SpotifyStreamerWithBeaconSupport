@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.android.project1" >
+    package="com.example.android.SpotifyStreamerWithBeaconSupport" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,7 +16,7 @@
             android:value="@string/GoogleNearbyAPIKey" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.android.SpotifyStreamerWithBeaconSupport.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -26,27 +26,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TrackActivity"
+            android:name="com.example.android.SpotifyStreamerWithBeaconSupport.TrackActivity"
             android:label="@string/title_activity_track"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="com.example.android.SpotifyStreamerWithBeaconSupport.MainActivity" >
         </activity>
         <activity
-            android:name=".TrackPlayerActivity"
+            android:name="com.example.android.SpotifyStreamerWithBeaconSupport.TrackPlayerActivity"
             android:label="@string/title_activity_track_player" >
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.example.android.SpotifyStreamerWithBeaconSupport.SettingsActivity"
             android:label="SettingsActivity" >
         </activity>
         <activity
-            android:name=".EventActivity"
+            android:name="com.example.android.SpotifyStreamerWithBeaconSupport.EventActivity"
             android:label="@string/title_activity_event" >
         </activity>
         <service
-            android:name=".service.TrackPlayerService"
+            android:name="com.example.android.SpotifyStreamerWithBeaconSupport.service.TrackPlayerService"
             android:exported="false"/>
         <service
-            android:name=".service.BeaconScanningService"
+            android:name="com.example.android.SpotifyStreamerWithBeaconSupport.service.BeaconScanningService"
             android:exported="false"/>
     </application>
 

@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -16,8 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.android.project1.models.LocalImage;
-import com.example.android.project1.models.LocalTrack;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalImage;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalTrack;
 
 import java.util.ArrayList;
 import java.util.HashMap;

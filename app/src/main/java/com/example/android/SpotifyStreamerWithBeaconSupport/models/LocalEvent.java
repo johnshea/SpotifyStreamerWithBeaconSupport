@@ -1,4 +1,4 @@
-package com.example.android.project1.models;
+package com.example.android.SpotifyStreamerWithBeaconSupport.models;
 
 /**
  * Created by John on 9/27/2015.

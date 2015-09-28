@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -34,9 +34,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.android.project1.models.LocalArtist;
-import com.example.android.project1.models.LocalTrack;
-import com.example.android.project1.service.TrackPlayerService;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalArtist;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalTrack;
+import com.example.android.SpotifyStreamerWithBeaconSupport.service.TrackPlayerService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.api.GoogleApiClient;

@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -17,10 +17,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.android.project1.models.LocalArtist;
-import com.example.android.project1.models.LocalImage;
-import com.example.android.project1.models.LocalTrack;
-import com.example.android.project1.service.TrackPlayerService;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalArtist;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalImage;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalTrack;
+import com.example.android.SpotifyStreamerWithBeaconSupport.service.TrackPlayerService;
 
 import java.util.ArrayList;
 

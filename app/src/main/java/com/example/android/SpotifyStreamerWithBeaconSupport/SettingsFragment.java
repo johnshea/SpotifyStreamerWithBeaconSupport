@@ -1,4 +1,4 @@
-package com.example.android.project1;
+package com.example.android.SpotifyStreamerWithBeaconSupport;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
-import com.example.android.project1.service.BeaconScanningService;
+import com.example.android.SpotifyStreamerWithBeaconSupport.service.BeaconScanningService;
 
 /**
  * Created by John on 9/7/2015.

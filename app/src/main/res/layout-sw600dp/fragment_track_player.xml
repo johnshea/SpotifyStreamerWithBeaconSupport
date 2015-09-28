@@ -5,7 +5,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.example.android.project1.TrackPlayerActivityFragment">
+    tools:context="com.example.android.SpotifyStreamerWithBeaconSupport.TrackPlayerActivityFragment">
 
     <TextView
         android:id="@+id/trackPlayerArtistName"

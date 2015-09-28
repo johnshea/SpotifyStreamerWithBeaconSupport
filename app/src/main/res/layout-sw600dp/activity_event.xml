@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
-    <com.example.android.project1.TrackFrameLayout
+    <com.example.android.SpotifyStreamerWithBeaconSupport.TrackFrameLayout
         android:id="@+id/track_list_container"
         tools:layout="@layout/fragment_track"
         android:layout_width="0dp"

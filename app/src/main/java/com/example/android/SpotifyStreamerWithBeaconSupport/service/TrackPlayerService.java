@@ -1,4 +1,4 @@
-package com.example.android.project1.service;
+package com.example.android.SpotifyStreamerWithBeaconSupport.service;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -20,11 +20,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.android.project1.Constants;
-import com.example.android.project1.MainActivity;
-import com.example.android.project1.R;
-import com.example.android.project1.models.LocalArtist;
-import com.example.android.project1.models.LocalTrack;
+import com.example.android.SpotifyStreamerWithBeaconSupport.Constants;
+import com.example.android.SpotifyStreamerWithBeaconSupport.MainActivity;
+import com.example.android.SpotifyStreamerWithBeaconSupport.R;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalArtist;
+import com.example.android.SpotifyStreamerWithBeaconSupport.models.LocalTrack;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
