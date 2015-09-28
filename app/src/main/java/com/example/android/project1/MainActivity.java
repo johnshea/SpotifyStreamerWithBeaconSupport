@@ -1,19 +1,26 @@
 package com.example.android.project1;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
@@ -21,20 +28,43 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.android.project1.models.LocalArtist;
 import com.example.android.project1.models.LocalTrack;
 import com.example.android.project1.service.TrackPlayerService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
+import com.google.android.gms.nearby.messages.MessageFilter;
+import com.google.android.gms.nearby.messages.MessageListener;
+import com.google.android.gms.nearby.messages.Strategy;
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity
         implements MainActivityFragment.OnArtistSelectedListener, TrackActivityFragment.OnTrackSelectedListener
-        , TrackPlayerActivityFragment.TrackPlayerActivityListener {
+        , TrackPlayerActivityFragment.TrackPlayerActivityListener
+, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+
+    GoogleApiClient mGoogleApiClient;
+
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private boolean mDualPane;
     private LocalArtist mSelectedArtist;
@@ -50,6 +80,181 @@ public class MainActivity extends ActionBarActivity
 
     private ShareActionProvider mShareActionProvider;
     private MenuItem mShareMenuItem;
+
+    // Google Play Services
+    // Request code to use when launching the resolution activity
+    private static final int REQUEST_RESOLVE_ERROR = 1001;
+    // Unique tag for the error dialog fragment
+    private static final String DIALOG_ERROR = "dialog_error";
+    // Bool to track whether the app is already resolving an error
+    private boolean mResolvingError = false;
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(LOG_TAG, "onConnected");
+        publishAndSubscribe();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(LOG_TAG, "onConnectionSuspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (connectionResult.hasResolution()) {
+            try {
+                mResolvingError = true;
+                connectionResult.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                mGoogleApiClient.connect();
+            }
+        } else {
+            // Show dialog using GoogleApiAvailability.getErrorDialog()
+            showErrorDialog(connectionResult.getErrorCode());
+            mResolvingError = true;
+        }
+    }
+
+    /* Creates a dialog for an error message */
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getFragmentManager(), "errordialog");
+    }
+
+    private void publishAndSubscribe() {
+
+        MessageFilter.Builder messageFilterBuilder = new MessageFilter.Builder()
+                .includeAllMyTypes();
+
+        Nearby.Messages.subscribe(mGoogleApiClient, messageListener, Strategy.BLE_ONLY,
+                messageFilterBuilder.build())
+                .setResultCallback(new ErrorCheckingCallback("subscribe()"));
+
+    }
+
+    /**
+     * A simple ResultCallback that displays a toast when errors occur.
+     * It also displays the Nearby opt-in dialog when necessary.
+     */
+    private class ErrorCheckingCallback implements ResultCallback<Status> {
+        private final String method;
+        private final Runnable runOnSuccess;
+
+        private ErrorCheckingCallback(String method) {
+            this(method, null);
+        }
+
+        private ErrorCheckingCallback(String method, @Nullable Runnable runOnSuccess) {
+            this.method = method;
+            this.runOnSuccess = runOnSuccess;
+        }
+
+        @Override
+        public void onResult(@NonNull Status status) {
+            if (status.isSuccess()) {
+                Log.i(LOG_TAG, method + " succeeded.");
+                if (runOnSuccess != null) {
+                    runOnSuccess.run();
+                }
+            } else {
+                // Currently, the only resolvable error is that the device is not opted
+                // in to Nearby. Starting the resolution displays an opt-in dialog.
+                if (status.hasResolution()) {
+                    if (!mResolvingError) {
+                        try {
+                            status.startResolutionForResult(MainActivity.this,
+                                    REQUEST_RESOLVE_ERROR);
+                            mResolvingError = true;
+                        } catch (IntentSender.SendIntentException e) {
+                            showToastAndLog(Log.ERROR, method + " failed with exception: " + e);
+                        }
+                    } else {
+                        // This will be encountered on initial startup because we do
+                        // both publish and subscribe together.  So having a toast while
+                        // resolving dialog is in progress is confusing, so just log it.
+                        Log.i(LOG_TAG, method + " failed with status: " + status
+                                + " while resolving error.");
+                    }
+                } else {
+                    showToastAndLog(Log.ERROR, method + " failed with : " + status
+                            + " resolving error: " + mResolvingError);
+                }
+            }
+        }
+    }
+
+    public void showToastAndLog(int errorLevel, String msg) {
+        switch ( errorLevel ) {
+            case Log.ERROR:
+                Log.e(LOG_TAG, msg);
+            default:
+                Log.d(LOG_TAG, msg);
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    // Create an instance of MessageListener
+    MessageListener messageListener = new MessageListener() {
+        // Called each time a new message is discovered nearby.
+        @Override
+        public void onFound(Message message) {
+            Log.i(LOG_TAG, "Found message: " + message);
+
+            String nearbyMessageNamespace = message.getNamespace();
+            String nearbyMessageType = message.getType();
+            String nearbyMessageString = new String(message.getContent());
+            byte[] nearbyMessageByte = message.getContent();
+
+            Log.i(LOG_TAG, "Message string: " + nearbyMessageString);
+            Log.i(LOG_TAG, "Message string (decoded): " + new String(Base64.decode(message.getContent(), Base64.DEFAULT)));
+//            Log.i(TAG, "Message string (nearbyMessageByte): " + Base64.decode(nearbyMessageByte, Base64.DEFAULT));
+//            Log.i(TAG, "Message string (new String nearbyMessageByte): " + new String(Base64.decode(nearbyMessageByte, Base64.DEFAULT)));
+            Log.i(LOG_TAG, "Message namespaced type: " + nearbyMessageNamespace +
+                    "/" + nearbyMessageType);
+
+            if ( nearbyMessageType.equals("event_id") ) {
+                String event_id = new String(Base64.decode(message.getContent(), Base64.DEFAULT));
+                Log.d(LOG_TAG, "Event id = " + event_id);
+                new BuildBeaconNotificationAsyncTask().execute(event_id);
+            }
+
+        }
+
+        // Called when a message is no longer nearby.
+        @Override
+        public void onLost(Message message) {
+            Log.i(LOG_TAG, "Lost message: " + message);
+
+            String nearbyMessageNamespace = message.getNamespace();
+            String nearbyMessageType = message.getType();
+            String nearbyMessageString = new String(message.getContent());
+
+            Log.i(LOG_TAG, "Message string: " + nearbyMessageString);
+            Log.i(LOG_TAG, "Message string (decoded): " + Base64.decode(nearbyMessageString, Base64.DEFAULT));
+            Log.i(LOG_TAG, "Message namespaced type: " + nearbyMessageNamespace +
+                    "/" + nearbyMessageType);
+        }
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
+
+    }
 
     @Override
     protected void onPause() {
@@ -216,6 +421,14 @@ public class MainActivity extends ActionBarActivity
             } else {
                 mDualPane = false;
             }
+
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Nearby.MESSAGES_API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+
+            mGoogleApiClient.connect();
 
             if (savedInstanceState != null) {
 
@@ -452,6 +665,13 @@ public class MainActivity extends ActionBarActivity
             mBound = false;
         }
 
+        if (mGoogleApiClient.isConnected()) {
+            Nearby.Messages.unsubscribe(mGoogleApiClient, messageListener)
+                    .setResultCallback(new ErrorCheckingCallback("unsubscribe()"));
+        }
+
+        mGoogleApiClient.disconnect();
+
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -542,6 +762,81 @@ public class MainActivity extends ActionBarActivity
 
                     break;
             }
+        }
+    }
+
+    public class BuildBeaconNotificationAsyncTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String webPage = params[0];
+
+            String site = "http://jscruffy.fatcow.com/" + webPage + ".json";
+
+            InputStream is = null;
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            try {
+                URL url = new URL(site);
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("GET");
+
+                conn.connect();
+                int response = conn.getResponseCode();
+                Log.d(LOG_TAG, "Response code = " + response);
+
+                is = conn.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+                String line;
+                while ( (line = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(line + "\n");
+                }
+                bufferedReader.close();
+
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Bad URL");
+            } finally {
+                if ( is != null ) {
+                    try {
+                        is.close();
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Unable to close input stream");
+                    }
+                }
+            }
+
+            return stringBuilder.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            NotificationManager mNotificationManager;
+
+            Intent intent = new Intent(MainActivity.this, EventActivity.class);
+            intent.putExtra("event_info", result);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            final Notification notification = new Notification.Builder(MainActivity.this)
+                    .setContentTitle("Upcoming Spotify Events (Real)")
+                    .setContentText("Your local events")
+                    .setSmallIcon(R.drawable.icon_square)
+                    .setContentIntent(pendingIntent)
+                    .build();
+
+            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+            mNotificationManager.notify(999, notification);
+
         }
     }
 }
